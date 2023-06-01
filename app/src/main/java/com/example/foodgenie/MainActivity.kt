@@ -382,7 +382,7 @@ fun makeApiRequest(ingredients: String, callback: (String) -> Unit) {
         .post(requestBody)
         .addHeader("Content-Type", "application/json")
         .addHeader("Accept", "application/json")
-        .addHeader("Authorization", "Bearer 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")
+        .addHeader("Authorization", "Bearer API Key Value Here")
         .build()
 
     GlobalScope.launch(Dispatchers.IO) {
