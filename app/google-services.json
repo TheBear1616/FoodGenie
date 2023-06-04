@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "510901253541",
+    "project_id": "foodgenie-5d9c5",
+    "storage_bucket": "foodgenie-5d9c5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:510901253541:android:31869b7d9d51650c0c644c",
+        "android_client_info": {
+          "package_name": "com.example.foodgenie"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "510901253541-hqfeojn5lovrcasuo34pi6aecs9k9on7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrg23YII9keUHY86VbbTeCVi7SUX9E7iE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "510901253541-hqfeojn5lovrcasuo34pi6aecs9k9on7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

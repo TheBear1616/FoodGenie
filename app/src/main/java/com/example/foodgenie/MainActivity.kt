@@ -66,7 +66,8 @@ fun ApiRequestScreen() {
     ) {
         Button(
             onClick = {
-                val ingredients = "protein powder, cinnamon, eggs, milk, bread, oats, and strawberries"
+                val ingredients =
+                    "protein powder, cinnamon, eggs, milk, bread, oats, and strawberries"
                 makeApiRequest(ingredients) { result ->
                     responseTextState.value = result
                 }
@@ -187,7 +188,8 @@ fun FoodGenieApp() {
 
                         IconButton(
                             onClick = {
-                                ingredientListState.value = ingredientListState.value.filter { it != ingredient }
+                                ingredientListState.value =
+                                    ingredientListState.value.filter { it != ingredient }
                             },
                             modifier = Modifier.padding(start = 8.dp)
                         ) {
@@ -228,9 +230,6 @@ fun FoodGenieApp() {
     }
 }
 
-
-
-
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
@@ -265,7 +264,7 @@ fun makeApiRequest(ingredients: String, callback: (String) -> Unit) {
         .post(requestBody)
         .addHeader("Content-Type", "application/json")
         .addHeader("Accept", "application/json")
-        .addHeader("Authorization", "Bearer API Key Here")
+        .addHeader("Authorization", "Bearer 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")
         .build()
 
 
@@ -278,7 +277,8 @@ fun makeApiRequest(ingredients: String, callback: (String) -> Unit) {
                 responseBody?.let {
                     val json = Json { ignoreUnknownKeys = true }
                     val apiResponse = json.decodeFromString<APIResponse>(it)
-                    val messageContent = apiResponse.choices.firstOrNull()?.message?.content ?: "No response"
+                    val messageContent =
+                        apiResponse.choices.firstOrNull()?.message?.content ?: "No response"
                     callback(messageContent)
                 }
             }
