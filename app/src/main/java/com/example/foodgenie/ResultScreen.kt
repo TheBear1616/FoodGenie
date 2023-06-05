@@ -91,47 +91,6 @@ fun ResultScreen(navController: NavController, ingredients: String) {
     }
 }
 
-@Composable
-fun ResultScreenTest(navController: NavController) {
-    val responseTextState = remember { mutableStateOf("") }
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        val ingredients =
-            "protein powder, cinnamon, eggs, milk, bread, oats, and strawberries"
-
-        LaunchedEffect(Unit) {
-            makeApiRequest(ingredients) { result ->
-                responseTextState.value = result
-            }
-        }
-
-        Text(
-            text = responseTextState.value,
-            modifier = Modifier.padding(16.dp),
-            style = TextStyle(fontSize = 16.sp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (responseTextState.value.isNotEmpty()) {
-            IconButton(
-                onClick = { },
-                modifier = Modifier.padding(start = 8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = "Favorite",
-                    tint = Color.Red
-                )
-            }
-        }
-    }
-}
-
-
 fun makeApiRequest(ingredients: String, callback: (String) -> Unit) {
     val client = OkHttpClient()
     val mediaType = "application/json; charset=utf-8".toMediaType()
