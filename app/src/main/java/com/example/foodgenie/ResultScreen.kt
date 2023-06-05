@@ -1,6 +1,10 @@
 package com.example.foodgenie
 
+import android.net.Uri
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
@@ -11,7 +15,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -28,7 +39,60 @@ import okhttp3.Response
 import java.io.IOException
 
 @Composable
-fun ResultScreen(navController: NavController) {
+fun ResultScreen(navController: NavController, ingredients: String) {
+    val responseTextState = remember { mutableStateOf("") }
+    val isLoadingState = remember { mutableStateOf(false) }
+    val showFavoriteButton = responseTextState.value.isNotEmpty()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .background(Color.White)
+            .border(2.dp, Color(0xFFE81A1A), shape = RoundedCornerShape(12.dp))
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+//        val ingredients =
+//            "protein powder, cinnamon, eggs, milk, bread, oats, and strawberries"
+
+        LaunchedEffect(Unit) {
+            makeApiRequest(ingredients) { result ->
+                responseTextState.value = result
+                isLoadingState.value = false
+            }
+            isLoadingState.value = true
+        }
+
+        if (isLoadingState.value) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+        } else {
+            if (showFavoriteButton) {
+                Text(
+                    text = responseTextState.value,
+                    modifier = Modifier.padding(16.dp),
+                    style = TextStyle(fontSize = 16.sp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                IconButton(
+                    onClick = { },
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Favorite,
+                        contentDescription = "Favorite",
+                        tint = Color.Red
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ResultScreenTest(navController: NavController) {
     val responseTextState = remember { mutableStateOf("") }
 
     Column(
@@ -45,45 +109,28 @@ fun ResultScreen(navController: NavController) {
             }
         }
 
-//        Button(
-//            onClick = {
-//                val newIngredientList =
-//                    ingredientListState.value.toMutableList() + textState.value
-//                textState.value = ""
-//                val ingredients = newIngredientList.joinToString(", ")
-//                if (ingredients.isNotEmpty()) {
-//                    makeApiRequest(ingredients) { result ->
-//                        responseTextState.value = result
-//                        isLoadingState.value = false
-//                        ingredientListState.value = emptyList()
-//                    }
-//                    isLoadingState.value = true
-//                }
-//            },
-//            modifier = Modifier
-//                .padding(12.dp)
-//                .height(48.dp)
-//                .fillMaxWidth()
-//        ) {
-//            Text("Get Recipes")
-//        }
-
-        Text(text = responseTextState.value)
+        Text(
+            text = responseTextState.value,
+            modifier = Modifier.padding(16.dp),
+            style = TextStyle(fontSize = 16.sp)
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
-
-        IconButton(
-            onClick = { },
-            modifier = Modifier.padding(start = 8.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Favorite,
-                contentDescription = "Favorite",
-                tint = Color.Red
-            )
+        if (responseTextState.value.isNotEmpty()) {
+            IconButton(
+                onClick = { },
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = "Favorite",
+                    tint = Color.Red
+                )
+            }
         }
     }
 }
+
 
 fun makeApiRequest(ingredients: String, callback: (String) -> Unit) {
     val client = OkHttpClient()
@@ -94,7 +141,7 @@ fun makeApiRequest(ingredients: String, callback: (String) -> Unit) {
         "messages": [
             {
                 "role": "user",
-                "content": "I have $ingredients. What dish can I make out of the mentioned ingredients for my breakfast? Please provide me with the recipe as well. Provide the output in the following format: Dish, Ingredients, and Instructions."
+                "content": "I have $ingredients. What dish can I make out of the mentioned ingredients? Please provide me with the recipe as well. Provide the output in the following format: Dish, Ingredients, and Instructions."
             }
         ],
         "temperature": 1,
@@ -111,7 +158,7 @@ fun makeApiRequest(ingredients: String, callback: (String) -> Unit) {
         .post(requestBody)
         .addHeader("Content-Type", "application/json")
         .addHeader("Accept", "application/json")
-        .addHeader("Authorization", "Bearer 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")
+        .addHeader("Authorization", "Bearer API Key Here")
         .build()
 
 

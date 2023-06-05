@@ -1,14 +1,13 @@
 package com.example.foodgenie
 
-import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -22,17 +21,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecommenderScreen(navController: NavController) {
     val textState = remember { mutableStateOf("") }
-    val responseTextState = remember { mutableStateOf("") }
-    val isLoadingState = remember { mutableStateOf(false) }
     val ingredientListState = remember { mutableStateOf(emptyList<String>()) }
     lateinit var firebaseAuth: FirebaseAuth
 
@@ -40,6 +34,8 @@ fun RecommenderScreen(navController: NavController) {
     Column(
         modifier = Modifier.padding(16.dp)
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text(
             text = "Food Genie",
             style = MaterialTheme.typography.bodyLarge.copy(
@@ -95,37 +91,22 @@ fun RecommenderScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (isLoadingState.value) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-        } else {
-            if (responseTextState.value.isNotEmpty()) {
-                Text(
-                    text = responseTextState.value,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp)
-                        .padding(16.dp)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         if (ingredientListState.value.isNotEmpty()) {
             Text(
-                text = "Ingredient List:",
+                text = "INGREDIENT LIST:",
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(bottom = 8.dp)
-                    .border(1.dp, Color.Black)
+                    .border(2.dp, Color(0xFFE81A1A), shape = RoundedCornerShape(12.dp))
                     .padding(8.dp)
                     .fillMaxWidth()
             )
 
             LazyColumn(
                 modifier = Modifier
-                    .weight(1f),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 4.dp)
+                    .weight(7f)
+                    .border(2.dp, Color(0xFFE81A1A), shape = RoundedCornerShape(12.dp)),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp)
             ) {
                 items(ingredientListState.value) { ingredient ->
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -160,21 +141,14 @@ fun RecommenderScreen(navController: NavController) {
                     ingredientListState.value.toMutableList() + textState.value
                 textState.value = ""
                 val ingredients = newIngredientList.joinToString(", ")
-                if (ingredients.isNotEmpty()) {
-                    makeApiRequest(ingredients) { result ->
-                        responseTextState.value = result
-                        isLoadingState.value = false
-                        ingredientListState.value = emptyList()
-                    }
-                    isLoadingState.value = true
-                }
+                navController.navigate("ResultScreen/${Uri.encode(ingredients)}")
             },
             modifier = Modifier
                 .padding(12.dp)
                 .height(48.dp)
                 .fillMaxWidth()
         ) {
-            Text("Get Recipes")
+            Text("GET RECIPES")
         }
     }
 }

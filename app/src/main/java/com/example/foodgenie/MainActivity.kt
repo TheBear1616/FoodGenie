@@ -19,9 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.foodgenie.ui.theme.FoodGenieTheme
 import com.google.firebase.auth.FirebaseAuth
 
@@ -52,8 +54,12 @@ fun FoodGenieApp() {
         composable("RecommenderScreen") {
             RecommenderScreen(navController = navController)
         }
-        composable("ResultScreen") {
-            ResultScreen(navController = navController)
+        composable(
+            "ResultScreen/{ingredients}",
+            arguments = listOf(navArgument("ingredients") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val ingredients = backStackEntry.arguments?.getString("ingredients") ?: ""
+            ResultScreen(navController = navController, ingredients = ingredients)
         }
         composable("FavoritesScreen") {
             FavoritesScreen(navController = navController)
