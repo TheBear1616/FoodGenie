@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -28,8 +29,6 @@ import com.google.firebase.auth.FirebaseAuth
 fun RecommenderScreen(navController: NavController) {
     val textState = remember { mutableStateOf("") }
     val ingredientListState = remember { mutableStateOf(emptyList<String>()) }
-    lateinit var firebaseAuth: FirebaseAuth
-
 
     Column(
         modifier = Modifier.padding(16.dp)
@@ -123,7 +122,7 @@ fun RecommenderScreen(navController: NavController) {
                             modifier = Modifier.padding(start = 8.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Clear,
+                                imageVector = Icons.Default.Delete,
                                 contentDescription = "Remove",
                                 tint = Color.Red
                             )

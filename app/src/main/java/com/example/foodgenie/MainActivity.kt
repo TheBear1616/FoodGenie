@@ -59,7 +59,8 @@ fun FoodGenieApp() {
             arguments = listOf(navArgument("ingredients") { type = NavType.StringType })
         ) { backStackEntry ->
             val ingredients = backStackEntry.arguments?.getString("ingredients") ?: ""
-            ResultScreen(navController = navController, ingredients = ingredients)
+            val context = LocalContext.current
+            ResultScreen(navController, ingredients, context)
         }
         composable("FavoritesScreen") {
             FavoritesScreen(navController = navController)
@@ -104,7 +105,7 @@ fun HomeScreen(navController: NavController) {
                 .height(48.dp)
                 .fillMaxWidth()
         ) {
-            Text("Food Recipe Recommender")
+            Text("Recipe Recommender")
         }
 
         Button(

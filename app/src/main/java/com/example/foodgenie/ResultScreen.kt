@@ -1,6 +1,8 @@
 package com.example.foodgenie
 
-import android.net.Uri
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -15,18 +17,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.SerialName
@@ -37,19 +36,21 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
+import java.util.*
 
 @Composable
-fun ResultScreen(navController: NavController, ingredients: String) {
+fun ResultScreen(navController: NavController, ingredients: String, context: Context) {
     val responseTextState = remember { mutableStateOf("") }
     val isLoadingState = remember { mutableStateOf(false) }
     val showFavoriteButton = responseTextState.value.isNotEmpty()
+    val dbInstance = FirebaseFirestore.getInstance()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
             .background(Color.White)
-            .border(2.dp, Color(0xFFE81A1A), shape = RoundedCornerShape(12.dp))
+            .border(5.dp, Color(0xFFE81A1A), shape = RoundedCornerShape(12.dp))
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -68,6 +69,11 @@ fun ResultScreen(navController: NavController, ingredients: String) {
         if (isLoadingState.value) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
         } else {
+            val recipeToAdd = hashMapOf(
+                "id" to "recipe" + generateRandom4DigitNumber(),
+                "recipe" to responseTextState.value
+            )
+
             if (showFavoriteButton) {
                 Text(
                     text = responseTextState.value,
@@ -77,7 +83,18 @@ fun ResultScreen(navController: NavController, ingredients: String) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 IconButton(
-                    onClick = { },
+                    onClick = {
+                        dbInstance.collection("favorite_recipes")
+                            .add(recipeToAdd)
+                            .addOnSuccessListener { documentReference ->
+                                Toast.makeText(context, "Successfully Saved To Favorites", Toast.LENGTH_SHORT).show()
+                                Log.d("success", "DocumentSnapshot added with ID: ${documentReference.id}")
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(context, "Failed to save the dish to favorites. Please try again.", Toast.LENGTH_SHORT).show()
+                                Log.w("error", "Error adding document", e)
+                            }
+                    },
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Icon(
@@ -117,7 +134,7 @@ fun makeApiRequest(ingredients: String, callback: (String) -> Unit) {
         .post(requestBody)
         .addHeader("Content-Type", "application/json")
         .addHeader("Accept", "application/json")
-        .addHeader("Authorization", "Bearer API Key Here")
+        .addHeader("Authorization", "API KEY HERE!!!")
         .build()
 
 
@@ -139,6 +156,10 @@ fun makeApiRequest(ingredients: String, callback: (String) -> Unit) {
             e.printStackTrace()
         }
     }
+}
+
+fun generateRandom4DigitNumber(): Int {
+    return Random.nextInt(1000, 10000)
 }
 
 @Serializable
