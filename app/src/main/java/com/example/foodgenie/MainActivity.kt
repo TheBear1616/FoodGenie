@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
@@ -105,17 +106,31 @@ fun HomeScreen(navController: NavController) {
                 .height(48.dp)
                 .fillMaxWidth()
         ) {
-            Text("Recipe Recommender")
+            Text(
+                text = "Recipe Recommender",
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp,
+                color = Color.White
+            )
         }
 
         Button(
             onClick = { navController.navigate("FavoritesScreen") },
             modifier = Modifier
-                .padding(12.dp)
+                .padding(16.dp)
                 .height(48.dp)
                 .fillMaxWidth()
         ) {
-            Text("Favorite Recipes")
+            Text(
+                text = "Favorite Recipes",
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp,
+                color = Color.White
+            )
         }
 
         Spacer(modifier = Modifier.height(192.dp))
@@ -131,9 +146,11 @@ fun HomeScreen(navController: NavController) {
         ) {
             Text(
                 text = "LOGOUT",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontWeight = FontWeight.Bold
-                ),
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
                 color = Color.White
             )
         }
