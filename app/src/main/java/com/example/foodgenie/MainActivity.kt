@@ -18,7 +18,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -38,7 +37,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    FoodGenieApp()
+                    FoodGenieApp(activity = this@MainActivity)
                 }
             }
         }
@@ -46,11 +45,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun FoodGenieApp() {
+fun FoodGenieApp(activity: MainActivity) {
     val navController = rememberNavController()
     NavHost(navController, startDestination = "HomeScreen") {
         composable("HomeScreen") {
-            HomeScreen(navController = navController)
+            HomeScreen(navController = navController, activity)
         }
         composable("RecommenderScreen") {
             RecommenderScreen(navController = navController)
@@ -73,7 +72,7 @@ fun FoodGenieApp() {
 }
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, activity: MainActivity) {
     val firebaseAuth = FirebaseAuth.getInstance()
 
     Column(
@@ -136,7 +135,11 @@ fun HomeScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(192.dp))
 
         Button(
-            onClick = {},
+            onClick = {
+                firebaseAuth.signOut()
+                val intent = Intent(activity, Login::class.java)
+                activity.startActivity(intent)
+            },
             modifier = Modifier
                 .padding(12.dp)
                 .height(48.dp)
