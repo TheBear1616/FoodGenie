@@ -37,6 +37,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun ResultScreen(navController: NavController, ingredients: String, context: Context) {
@@ -55,9 +56,6 @@ fun ResultScreen(navController: NavController, ingredients: String, context: Con
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-//        val ingredients =
-//            "protein powder, cinnamon, eggs, milk, bread, oats, and strawberries"
-
         LaunchedEffect(Unit) {
             makeApiRequest(ingredients) { result ->
                 responseTextState.value = result
@@ -69,8 +67,9 @@ fun ResultScreen(navController: NavController, ingredients: String, context: Con
         if (isLoadingState.value) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
         } else {
+            val dishName = responseTextState.value.substringAfter("Dish: ").substringBefore("\n")
             val recipeToAdd = hashMapOf(
-                "id" to "recipe" + generateRandom4DigitNumber(),
+                "id" to dishName,
                 "recipe" to responseTextState.value
             )
 
@@ -109,7 +108,9 @@ fun ResultScreen(navController: NavController, ingredients: String, context: Con
 }
 
 fun makeApiRequest(ingredients: String, callback: (String) -> Unit) {
-    val client = OkHttpClient()
+    val client = OkHttpClient.Builder()
+        .callTimeout(60, TimeUnit.SECONDS) // Increase the overall timeout to 60 seconds
+        .build()
     val mediaType = "application/json; charset=utf-8".toMediaType()
     val requestBody = """
     {
@@ -134,7 +135,7 @@ fun makeApiRequest(ingredients: String, callback: (String) -> Unit) {
         .post(requestBody)
         .addHeader("Content-Type", "application/json")
         .addHeader("Accept", "application/json")
-        .addHeader("Authorization", "API KEY HERE!!!")
+        .addHeader("Authorization", "Bearer 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")
         .build()
 
 

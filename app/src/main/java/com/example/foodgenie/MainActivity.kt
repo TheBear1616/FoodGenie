@@ -65,8 +65,12 @@ fun FoodGenieApp(activity: MainActivity) {
         composable("FavoritesScreen") {
             FavoritesScreen(navController = navController)
         }
-        composable("DisplayRecipeScreen") {
-            DisplayRecipeScreen(navController = navController)
+        composable(
+            "DisplayRecipeScreen/{recipeID}",
+            arguments = listOf(navArgument("recipeID") {type = NavType.StringType})
+        ) {backStackEntry ->
+            val recipeID = backStackEntry.arguments?.getString("recipeID") ?: ""
+            DisplayRecipeScreen(navController = navController, recipeID)
         }
     }
 }

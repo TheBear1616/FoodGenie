@@ -1,5 +1,6 @@
 package com.example.foodgenie
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,11 +32,13 @@ import kotlinx.serialization.Serializable
 fun FavoritesScreen(navController: NavController) {
     var favRecipes = remember { mutableStateOf(listOf<FavRecipes>()) }
     var isDataLoaded = remember { mutableStateOf(false) }
+    var recipeIDs = remember { mutableStateOf(listOf<String>()) }
 
     LaunchedEffect(Unit) {
-        favRecipes.value = getRecipes()
+        val (ids, recipes) = getRecipes()
+        recipeIDs.value = ids
+        favRecipes.value = recipes
         isDataLoaded.value = true
-        Log.d("result", favRecipes.toString())
     }
 
     Column(
@@ -92,7 +95,9 @@ fun FavoritesScreen(navController: NavController) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { /* Handle click event */ }
+                                .clickable {
+                                    navController.navigate("DisplayRecipeScreen/${recipeIDs.value[index]}")
+                                }
                                 .height(48.dp)
                                 .background(
                                     color = Color(android.graphics.Color.parseColor("#08648c")),
@@ -128,20 +133,28 @@ fun FavoritesScreen(navController: NavController) {
     }
 }
 
-suspend fun getRecipes(): List<FavRecipes> {
+suspend fun getRecipes(): Pair<List<String>, List<FavRecipes>> {
     val dbInstance = FirebaseFirestore.getInstance()
+    val recipeIds = mutableListOf<String>()
     var favRecipes = listOf<FavRecipes>()
 
     try {
-        favRecipes = dbInstance.collection("favorite_recipes").get().await().map {
-            it.toObject(FavRecipes::class.java)
+        val querySnapshot = dbInstance.collection("favorite_recipes").get().await()
+        for (document in querySnapshot.documents) {
+            val recipe = document.toObject(FavRecipes::class.java)
+            recipe?.let {
+                val recipeId = document.id
+                recipeIds.add(recipeId)
+                favRecipes += recipe
+            }
         }
     } catch (e: FirebaseFirestoreException) {
         Log.d("error", "getDataFromFireStore: $e")
     }
 
-    return favRecipes
+    return Pair(recipeIds, favRecipes)
 }
+
 
 @Serializable
 data class FavRecipes(
