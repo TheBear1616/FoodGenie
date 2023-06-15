@@ -51,4 +51,4 @@ Contributions to the Food Genie mobile application are welcome. If you find any 
 
 ## Contact
 
-For any inquiries or feedback, please contact us at [mshivaku@calpoly.edu](mailto:mshivaku@calpoly.edu).
+For any inquiries or feedback, please contact me at [mshivaku@calpoly.edu](mailto:mshivaku@calpoly.edu).
